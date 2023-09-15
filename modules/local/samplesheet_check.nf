@@ -1,31 +1,34 @@
 process SAMPLESHEET_CHECK {
-    tag "$samplesheet"
+    tag "${samplesheet}|${aligner}"
     label 'process_single'
 
-    conda "conda-forge::python=3.8.3"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/python:3.8.3' :
-        'quay.io/biocontainers/python:3.8.3' }"
+    container "nfancy/snomics:4.2.3"
+
+    // Exit if running this module with -profile conda / -profile mamba
+    if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+        exit 1, "this pipeline does not support Conda. Please use Docker / Singularity / Podman instead."
+    }
 
     input:
     path samplesheet
+    val aligner
 
     output:
-    path '*.csv'       , emit: csv
-    path "versions.yml", emit: versions
+    path "*.csv",                   emit: csv
+    path "versions.yml",            emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script: // This script is bundled with the pipeline, in nf-core/snomics/bin/
     """
-    check_samplesheet.py \\
-        $samplesheet \\
-        samplesheet.valid.csv
+    check_samplesheet.r \\
+        --input $samplesheet \\
+        --aligner $aligner
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python --version | sed 's/Python //g')
+        R: \$( R --version | grep "R version" | cut -d' ' -f3 )
     END_VERSIONS
     """
 }
