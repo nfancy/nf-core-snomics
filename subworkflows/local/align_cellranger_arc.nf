@@ -13,6 +13,7 @@ workflow CELLRANGER_ARC_ALIGN {
         gtf
         cellranger_index
         ch_fastq
+        samplesheet
 
     main:
         ch_versions = Channel.empty()
@@ -33,8 +34,7 @@ workflow CELLRANGER_ARC_ALIGN {
 
         // Obtain read counts
         CELLRANGER_COUNT (
-            // TODO what is `gem` and why is it needed?
-            ch_fastq.map{ meta, reads -> [meta + ["gem": meta.id, "samples": [meta.id]], reads] },
+            samplesheet
             cellranger_index
         )
         ch_versions = ch_versions.mix(CELLRANGER_COUNT.out.versions)
