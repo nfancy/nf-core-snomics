@@ -1,7 +1,6 @@
 process SAMPLESHEET_CHECK {
-    tag "${samplesheet}|${aligner}"
-    label 'process_single'
-
+    tag       "${samplesheet}|${aligner}"
+    label     'process_single'
     container "nfancy/snomics:4.2.3"
 
     // Exit if running this module with -profile conda / -profile mamba
@@ -14,7 +13,7 @@ process SAMPLESHEET_CHECK {
     val aligner
 
     output:
-    path "*.csv",                   emit: csv
+    path "checked_samplesheet.csv", emit: checked_samplesheet
     path "versions.yml",            emit: versions
 
     when:
@@ -22,13 +21,13 @@ process SAMPLESHEET_CHECK {
 
     script: // This script is bundled with the pipeline, in nf-core/snomics/bin/
     """
-    check_samplesheet.r \\
+    /rds/general/user/mat21/home/snomics_dev/nf-core-snomics/bin/check_samplesheet.r \\
         --input $samplesheet \\
         --aligner $aligner
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        R: \$( R --version | grep "R version" | cut -d' ' -f3 )
+        R: \$(R --version | sed 's/R //g')
     END_VERSIONS
     """
 }
