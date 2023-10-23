@@ -34,9 +34,9 @@ ch_cellranger_index = params.cellranger_index ? file(params.cellranger_index) : 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
-include { GTF_GENE_FILTER   } from '../modules/local/gtf_gene_filter'
-include { CELLRANGER_ALIGN  } from "../subworkflows/local/align_cellranger"
+include { INPUT_CHECK           } from '../subworkflows/local/input_check'
+include { GTF_GENE_FILTER       } from '../modules/local/gtf_gene_filter'
+include { CELLRANGER_ALIGN      } from "../subworkflows/local/align_cellranger"
 include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_arc"
 
 /*
