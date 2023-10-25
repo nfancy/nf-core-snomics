@@ -8,7 +8,8 @@
                     "cellranger/count": {
                         "branch": "master",
                         "git_sha": "abe9c71bdc56686abd337995580fbf35a6e5e013",
-                        "installed_by": ["modules"]
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/cellranger/count/cellranger-count.diff"
                     },
                     "cellranger/mkgtf": {
                         "branch": "master",
