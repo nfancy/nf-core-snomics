@@ -21,7 +21,7 @@ process SAMPLESHEET_CHECK {
 
     script: // This script is bundled with the pipeline, in nf-core/snomics/bin/
     """
-    /rds/general/user/mat21/home/snomics_dev/nf-core-snomics/bin/check_samplesheet.r \\
+    check_samplesheet.r \\
         --input $samplesheet \\
         --aligner $aligner
 

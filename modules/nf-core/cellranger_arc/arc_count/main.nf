@@ -111,7 +111,16 @@ process CELLRANGER_ARC_COUNT {
     "${task.process}":
         cellranger-arc: \$(echo \$( cellranger-arc --version 2>&1) | sed 's/^.*[^0-9]\\([0-9]*\\.[0-9]*\\.[0-9]*\\).*\$/\\1/' )
     END_VERSIONS
-    endcomment
+    """
+
+    stub:
+    """
+    mkdir -p "${meta_gex.id}/outs/"
+    touch sample-${meta_gex.id}/outs/fake_file.txt
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        cellranger-arc: \$(echo \$( cellranger-arc --version 2>&1) | sed 's/^.*[^0-9]\\([0-9]*\\.[0-9]*\\.[0-9]*\\).*\$/\\1/' )
+    END_VERSIONS
     """
 
 }

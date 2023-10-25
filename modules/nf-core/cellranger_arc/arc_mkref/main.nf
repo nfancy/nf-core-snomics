@@ -1,6 +1,6 @@
 process CELLRANGER_ARC_MKREF {
     tag       "$fasta"
-    label     'process_medium'
+    label     'process_high'
     container "austins2/cellranger-arc:v2.0.0"
 
     // Exit if running this module with -profile conda / -profile mamba
