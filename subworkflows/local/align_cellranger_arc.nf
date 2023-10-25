@@ -2,9 +2,9 @@
  * Alignment with Cellranger-arc
  */
 
-include { CELLRANGER_ARC_MKGTF } from "../../modules/nf-core/cellranger_arc/arc_mkgtf/main.nf"
-include { CELLRANGER_ARC_MKREF } from "../../modules/nf-core/cellranger_arc/arc_mkref/main.nf"
-include { CELLRANGER_ARC_COUNT } from "../../modules/nf-core/cellranger_arc/arc_count/main.nf"
+include { CELLRANGER_ARC_MKGTF } from "../../modules/local/cellranger_arc/arc_mkgtf/main.nf"
+include { CELLRANGER_ARC_MKREF } from "../../modules/local/cellranger_arc/arc_mkref/main.nf"
+include { CELLRANGER_ARC_COUNT } from "../../modules/local/cellranger_arc/arc_count/main.nf"
 
 // Define workflow to subset and index a genome region fasta file
 workflow CELLRANGER_ARC_ALIGN {
