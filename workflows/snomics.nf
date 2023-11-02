@@ -50,6 +50,7 @@ include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_a
 //
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
 
 
 /*
@@ -74,6 +75,16 @@ workflow SNOMICS {
     ).reads
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+
+    //
+    // MODULE: Concatenate .fastq
+    //
+    ch_fastq = CAT_FASTQ (
+        ch_fastq
+    ).reads
+    ch_fastq.view()
+
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
     // MODULE: Run FastQC

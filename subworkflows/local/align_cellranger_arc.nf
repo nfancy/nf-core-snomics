@@ -33,23 +33,19 @@ workflow CELLRANGER_ARC_ALIGN {
             cellranger_arc_index = CELLRANGER_ARC_MKREF.out.reference
         }
         
-        // Split GEX and ATAC channels
-        ch_fastq
-            .groupTuple()
-            .map { [ it[0], it[1].flatten() ] }
-            .branch {
-                gex: it[0].library_type == 'Gene Expression'
-                acc: it[0].library_type == 'Chromatin Accessibility'
-            }
-            .set { ch_fastq }
+        // Group accessibility and expression fastqs by ID
+        // Currently blocking by groupTuple
 
-        ch_gex = ch_fastq.gex
-        ch_acc = ch_fastq.acc
+        ch_fastq
+            .map { [ it[0].id, [ it[0].library_type, it[1].flatten() ] ] } // Create list with library type key
+            .groupTuple() // Group ID
+            .map { [ it[0], it[1].sort{ a, b ->  a[0] <=> b[0] } ] } // Sort by library type key
+            .map { [ it[0], it[1][0][1], it[1][1][1] ] } // Expand lists to fastqs
+            .set { ch_fastq }
 
         // Obtain read counts
         CELLRANGER_ARC_COUNT (
-            ch_gex,
-            ch_acc,
+            ch_fastq,
             cellranger_arc_index
         )
         
