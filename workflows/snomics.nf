@@ -34,9 +34,9 @@ ch_cellranger_index = params.cellranger_index ? file(params.cellranger_index) : 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
-include { GTF_GENE_FILTER   } from '../modules/local/gtf_gene_filter'
-include { CELLRANGER_ALIGN  } from "../subworkflows/local/align_cellranger"
+include { INPUT_CHECK           } from '../subworkflows/local/input_check'
+include { GTF_GENE_FILTER       } from '../modules/local/gtf_gene_filter'
+include { CELLRANGER_ALIGN      } from "../subworkflows/local/align_cellranger"
 include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_arc"
 
 /*
@@ -50,6 +50,7 @@ include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_a
 //
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
 
 
 /*
@@ -74,6 +75,16 @@ workflow SNOMICS {
     ).reads
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+
+    //
+    // MODULE: Concatenate .fastq
+    //
+    ch_fastq = CAT_FASTQ (
+        ch_fastq
+    ).reads
+    ch_fastq.view()
+
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
     // MODULE: Run FastQC

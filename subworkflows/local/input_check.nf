@@ -2,8 +2,6 @@
 // Check input samplesheet and get read channels
 //
 
-
-
 include { SAMPLESHEET_CHECK } from '../../modules/local/samplesheet_check'
 
 workflow INPUT_CHECK {
@@ -14,23 +12,26 @@ workflow INPUT_CHECK {
 
     main:
     SAMPLESHEET_CHECK ( samplesheet, aligner )
-        .csv
+        .checked_samplesheet
         .splitCsv ( header:true, sep:',' )
         .map { create_fastq_channel(it) }
         .groupTuple(by: [0]) // group replicate files together, modifies channel to [ val(meta), [ [reads_rep1], [reads_repN] ] ]
         .map { meta, reads -> [ meta, reads.flatten() ] } // needs to flatten due to last "groupTuple", so we now have reads as a single array as expected by nf-core modules: [ val(meta), [ reads ] ]
         .set { reads }
+    
 
     emit:
     reads                                                            // channel: [ val(meta), [ reads ] ]
     versions = SAMPLESHEET_CHECK.out.versions                        // channel: [ versions.yml ]
 }
 
+
 // Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
 def create_fastq_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
-    meta.id         = row.sample
+    meta.id  = row.sample
+    meta.library_type = row.library_type
 
     // add path(s) of the fastq file(s) to the meta map
     def fastq_meta = []

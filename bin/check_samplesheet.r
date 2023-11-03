@@ -42,7 +42,7 @@ input <- read.csv(args$input)
 if( args$aligner == "cellranger" ){
   expected_cols <- c("sample", "fastq_1", "fastq_2")
 } else if (args$aligner == "cellranger_arc") {
-  expected_cols <- c("fastqs", "sample", "library_type")
+  expected_cols <- c("sample", "fastq_1", "fastq_2", "library_type")
 }
 
 assertthat::assert_that(all(expected_cols %in% colnames(input)),
