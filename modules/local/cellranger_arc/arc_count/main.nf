@@ -54,22 +54,8 @@ process CELLRANGER_ARC_COUNT {
 
     stub:
     """
-    mkdir -p ${meta.id}/outs/
-    touch ${meta.id}/outs/fake-gex_possorted_bam.bam.bai \
-          ${meta.id}/outs/fake-atac_fragments.tsv.gz \
-          ${meta.id}/outs/fake-per_barcode_metrics.csv \
-          ${meta.id}/outs/fake-atac_fragments.tsv.gz.tbi \
-          ${meta.id}/outs/fake-atac_cut_sites.bigwig" \
-          ${meta.id}/outs/fake-web_summary.html" \
-          ${meta.id}/outs/fake-atac_possorted_bam.bam" \
-          ${meta.id}/outs/fake-atac_possorted_bam.bam.bai" \
-          ${meta.id}/outs/fake-atac_peak_annotation.tsv" \
-          ${meta.id}/outs/fake-filtered_feature_bc_matrix.h5 \
-          ${meta.id}/outs/fake-cloupe.cloupe \
-          ${meta.id}/outs/fake-raw_feature_bc_matrix.h5 \
-          ${meta.id}/outs/fake-summary.csv \
-          ${meta.id}/outs/fake-gex_molecule_info.h5 \
-          ${meta.id}/outs/fake-gex_possorted_bam.bam
+    mkdir -p "${meta.id}/outs/"
+    touch sample-${meta.id}/outs/fake_file.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

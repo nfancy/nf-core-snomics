@@ -125,8 +125,6 @@ workflow SNOMICS {
             }
             .set { ch_bam }
 
-        ch_bam.view()
-
         MACS2_CALLPEAK (
             ch_bam,
             2.7e9 // need to make availible to user
@@ -134,8 +132,6 @@ workflow SNOMICS {
         ch_versions = ch_versions.mix(MACS2_CALLPEAK.out.versions)
     }
     
-    
-
 
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
