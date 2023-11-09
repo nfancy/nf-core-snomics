@@ -51,6 +51,7 @@ include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_a
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
+include { MACS2_CALLPEAK              } from '../modules/nf-core/macs2/callpeak/main' 
 
 
 /*
@@ -82,7 +83,6 @@ workflow SNOMICS {
     ch_fastq = CAT_FASTQ (
         ch_fastq
     ).reads
-    ch_fastq.view()
 
     ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
@@ -107,7 +107,7 @@ workflow SNOMICS {
         ch_versions = ch_versions.mix(CELLRANGER_ALIGN.out.ch_versions)
     }
 
-    // Run cellranger pipeline
+    // Run cellranger-arc pipeline
     if (params.aligner == "cellranger_arc") {
         CELLRANGER_ARC_ALIGN(
             ch_genome_fasta,
@@ -116,12 +116,31 @@ workflow SNOMICS {
             ch_fastq
         )
         ch_versions = ch_versions.mix(CELLRANGER_ARC_ALIGN.out.ch_versions)
+
+        // Run MACS2 on cellranger-arc atac output
+        ch_bam = CELLRANGER_ARC_ALIGN.out.outs    
+        ch_bam
+            .map { meta, outs -> 
+                [ meta: meta, bam: outs.findAll { it.endsWith("atac_possorted_bam.bam") }[0], control: [] ]
+            }
+            .set { ch_bam }
+
+        ch_bam.view()
+
+        MACS2_CALLPEAK (
+            ch_bam,
+            2.7e9 // need to make availible to user
+        )
+        ch_versions = ch_versions.mix(MACS2_CALLPEAK.out.versions)
     }
     
+    
 
-CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
+
+
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+            ch_versions.unique().collectFile(name: 'collated_versions.yml')
+        )
 
 
 
