@@ -39,6 +39,7 @@ ch_ensembl_mapping = params.ensembl_mapping ? file(params.ensembl_mapping) : []
 include { INPUT_CHECK } from '../subworkflows/local/input_check'
 include { GTF_GENE_FILTER   } from '../modules/local/gtf_gene_filter'
 include { CELLRANGER_ALIGN  } from "../subworkflows/local/align_cellranger"
+include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_arc"
 include { CELLBENDER } from "../subworkflows/local/cellbender.nf"
 
 /*
@@ -52,6 +53,8 @@ include { CELLBENDER } from "../subworkflows/local/cellbender.nf"
 //
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
+include { MACS2_CALLPEAK              } from '../modules/nf-core/macs2/callpeak/main' 
 
 
 /*
@@ -76,6 +79,15 @@ workflow SNOMICS {
     ).reads
 
     ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+
+    //
+    // MODULE: Concatenate .fastq
+    //
+    ch_fastq = CAT_FASTQ (
+        ch_fastq
+    ).reads
+
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions)
 
     //
     // MODULE: Run FastQC
@@ -115,6 +127,20 @@ workflow SNOMICS {
             ch_fastq
         )
         ch_versions = ch_versions.mix(CELLRANGER_ARC_ALIGN.out.ch_versions)
+
+        // Run MACS2 on cellranger-arc atac output
+        ch_bam = CELLRANGER_ARC_ALIGN.out.outs    
+        ch_bam
+            .map { meta, outs -> 
+                [ meta: meta, bam: outs.findAll { it.endsWith("atac_possorted_bam.bam") }[0], control: [] ]
+            }
+            .set { ch_bam }
+
+        MACS2_CALLPEAK (
+            ch_bam,
+            2.7e9 // need to make availible to user
+        )
+        ch_versions = ch_versions.mix(MACS2_CALLPEAK.out.versions)
     }
     
     // Run cellbender
@@ -125,9 +151,10 @@ workflow SNOMICS {
     )
 
 
-CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
+
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+            ch_versions.unique().collectFile(name: 'collated_versions.yml')
+        )
 
 
 
