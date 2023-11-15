@@ -6,12 +6,12 @@ process CELLRANGER_COUNT {
 
     input:
     tuple val(meta), path(reads, stageAs: "fastq_???/*")
-    tuple val(meta), path(reads, stageAs: "fastq_???/*")
     path  reference
 
     output:
-    tuple val(meta), path("${meta.id}/outs/*"),        emit: outs
-    path "versions.yml",				emit: versions
+    tuple val(meta), path("${meta.id}/outs/**")                        ,        emit: outs
+    tuple val(meta), path("${meta.id}/outs/raw_feature_bc_matrix.h5")  ,        emit: cellranger_h5
+    path "versions.yml"                                                ,        emit: versions
 
     when:
     task.ext.when == null || task.ext.when

@@ -11,7 +11,7 @@ WorkflowSnomics.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.fasta
+def checkPathParamList = [ params.input
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
@@ -24,6 +24,8 @@ ch_gtf = params.gtf ? file(params.gtf) : []
 ch_aligner = params.aligner
 ch_cellranger_index = params.cellranger_index ? file(params.cellranger_index) : []
 
+ch_ensembl_mapping = params.ensembl_mapping ? file(params.ensembl_mapping) : []
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,10 +36,11 @@ ch_cellranger_index = params.cellranger_index ? file(params.cellranger_index) : 
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK           } from '../subworkflows/local/input_check'
-include { GTF_GENE_FILTER       } from '../modules/local/gtf_gene_filter'
-include { CELLRANGER_ALIGN      } from "../subworkflows/local/align_cellranger"
+include { INPUT_CHECK } from '../subworkflows/local/input_check'
+include { GTF_GENE_FILTER   } from '../modules/local/gtf_gene_filter'
+include { CELLRANGER_ALIGN  } from "../subworkflows/local/align_cellranger"
 include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_arc"
+include { CELLBENDER } from "../subworkflows/local/cellbender.nf"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,7 +97,14 @@ workflow SNOMICS {
     )
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
+    if(!ch_cellranger_index) {
+
     ch_filter_gtf = GTF_GENE_FILTER ( ch_genome_fasta, ch_gtf ).gtf
+
+    } else {
+        
+        ch_filter_gtf = ch_gtf
+    }
     
     // Run cellranger pipeline
     if (params.aligner == "cellranger") {
@@ -105,6 +115,7 @@ workflow SNOMICS {
             ch_fastq
         )
         ch_versions = ch_versions.mix(CELLRANGER_ALIGN.out.ch_versions)
+        ch_cellranger_h5 = CELLRANGER_ALIGN.out.cellranger_h5
     }
 
     // Run cellranger-arc pipeline
@@ -132,6 +143,13 @@ workflow SNOMICS {
         ch_versions = ch_versions.mix(MACS2_CALLPEAK.out.versions)
     }
     
+    // Run cellbender
+
+    CELLBENDER(
+        ch_cellranger_h5,
+        ch_ensembl_mapping
+    )
+
 
 
     CUSTOM_DUMPSOFTWAREVERSIONS (

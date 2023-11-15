@@ -64,6 +64,7 @@ run(
         "--transcriptome", "${reference.name}",
         "--localcores", "${task.cpus}",
         "--localmem", "${task.memory.toGiga()}",
+        "--r1-length", "26",
         *shlex.split("""${args}""")
     ],
     # fmt: on
