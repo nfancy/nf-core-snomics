@@ -31,6 +31,17 @@
                     "default": "cellranger",
                     "description": "Name of the aligner tool. Possible values \"cellranger\", \"cellranger_arc\""
                 },
+                "ensembl_mapping": {
+                    "type": "string",
+                    "description": "Path to ensemble gene ID mapping file",
+                    "format": "file-path",
+                    "mimetype": "tsv"
+                },
+                "gpu": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to use GPU for cellbender"
+                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -60,7 +71,6 @@
                 },
                 "fasta": {
                     "type": "string",
-                    "format": "file-path",
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to FASTA genome file.",
@@ -73,15 +83,16 @@
                 },
                 "cellranger_index": {
                     "type": "string",
-                    "description": "Path to pre-defined cellranger index file."
+                    "description": "Path to pre-defined cellranger index file.",
+                    "format": "path"
+                },
+                "save_reference": {
+                    "type": "boolean"
                 },
                 "include_introns": {
                     "type": "boolean",
                     "default": true,
                     "description": "Parameter to include or exclude intronic reads in count."
-                },
-                "save_reference": {
-                    "type": "boolean"
                 },
                 "igenomes_base": {
                     "type": "string",
