@@ -19,12 +19,12 @@ process CAT_FASTQ {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: meta.library_type ? "${meta.id}_${meta.library_type.replaceAll(" ","")}" : "${meta.id}"
     def readList = reads instanceof List ? reads.collect{ it.toString() } : [reads.toString()]
     if (meta.single_end) {
         if (readList.size >= 1) {
             """
-            cat ${readList.join(' ')} > ${prefix}.merged.fastq.gz
+            cat ${readList.join(' ')} > ${prefix}.merged.fastq.gz  
 
             cat <<-END_VERSIONS > versions.yml
             "${task.process}":
@@ -38,8 +38,8 @@ process CAT_FASTQ {
             def read2 = []
             readList.eachWithIndex{ v, ix -> ( ix & 1 ? read2 : read1 ) << v }
             """
-            cat ${read1.join(' ')} > ${prefix}_1.merged.fastq.gz
-            cat ${read2.join(' ')} > ${prefix}_2.merged.fastq.gz
+            cat ${read1.join(' ')} > ${prefix}_S1_L001_R1.merged.fastq.gz
+            cat ${read2.join(' ')} > ${prefix}_S1_L001_R2.merged.fastq.gz
 
             cat <<-END_VERSIONS > versions.yml
             "${task.process}":
@@ -66,8 +66,8 @@ process CAT_FASTQ {
     } else {
         if (readList.size > 2) {
             """
-            touch ${prefix}_1.merged.fastq.gz
-            touch ${prefix}_2.merged.fastq.gz
+            touch ${prefix}_R1.merged.fastq.gz
+            touch ${prefix}_R2.merged.fastq.gz
 
             cat <<-END_VERSIONS > versions.yml
             "${task.process}":

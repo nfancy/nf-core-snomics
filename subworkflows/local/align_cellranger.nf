@@ -41,6 +41,5 @@ workflow CELLRANGER_ALIGN {
 
     emit:
         ch_versions
-        cellranger_out  = CELLRANGER_COUNT.out.outs
-        cellranger_h5   = CELLRANGER_COUNT.out.cellranger_h5
+        outs  = CELLRANGER_COUNT.out.outs
 }

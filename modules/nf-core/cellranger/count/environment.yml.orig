@@ -1,8 +1,0 @@
-<<<<<<< HEAD
-name: cellranger_count
-=======
->>>>>>> dev
-channels:
-  - conda-forge
-  - bioconda
-  - defaults

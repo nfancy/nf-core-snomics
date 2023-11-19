@@ -27,7 +27,7 @@ process SAMPLESHEET_CHECK {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        R: \$(R --version | sed 's/R //g')
+         R: \$( R --version | grep "R version" | cut -d' ' -f3 )
     END_VERSIONS
     """
 }

@@ -6,7 +6,6 @@ process CELLRANGER_COUNT {
 
     input:
     tuple val(meta), path(reads, stageAs: "fastq_???/*")
-    tuple val(meta), path(reads, stageAs: "fastq_???/*")
     path  reference
 
     output:

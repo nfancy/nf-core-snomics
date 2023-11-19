@@ -32,6 +32,4 @@ workflow CELLBENDER {
 
     emit:
         ch_versions
-        //cellbender_feature_bc_matrix  = CONVERT_H5.out.cellbender_feature_bc_matrix
-        //ch_cellbender_out
 }

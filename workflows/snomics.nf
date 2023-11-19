@@ -115,7 +115,12 @@ workflow SNOMICS {
             ch_fastq
         )
         ch_versions = ch_versions.mix(CELLRANGER_ALIGN.out.ch_versions)
-        ch_cellranger_h5 = CELLRANGER_ALIGN.out.cellranger_h5
+        ch_cellranger_h5 = CELLRANGER_ALIGN.out.outs
+        ch_cellranger_h5
+            .map { meta, outs -> 
+                [ meta: meta, h5: outs.findAll { it.endsWith("raw_feature_bc_matrix.h5") }[0]]
+            }
+            .set { ch_cellranger_h5 }
     }
 
     // Run cellranger-arc pipeline
@@ -127,6 +132,12 @@ workflow SNOMICS {
             ch_fastq
         )
         ch_versions = ch_versions.mix(CELLRANGER_ARC_ALIGN.out.ch_versions)
+        ch_cellranger_h5 = CELLRANGER_ARC_ALIGN.out.outs
+        ch_cellranger_h5
+            .map { meta, outs -> 
+                [ meta: meta, h5: outs.findAll { it.endsWith("raw_feature_bc_matrix.h5") }[0]]
+            }
+            .set { ch_cellranger_h5 }
 
         // Run MACS2 on cellranger-arc atac output
         ch_bam = CELLRANGER_ARC_ALIGN.out.outs    
@@ -138,17 +149,19 @@ workflow SNOMICS {
 
         MACS2_CALLPEAK (
             ch_bam,
-            2.7e9 // need to make availible to user
+            params.macs2_gsize // need to make availible to user
         )
         ch_versions = ch_versions.mix(MACS2_CALLPEAK.out.versions)
     }
     
-    // Run cellbender
-
+    //
+    // MODULE: Run cellbender
+    //
     CELLBENDER(
         ch_cellranger_h5,
         ch_ensembl_mapping
     )
+    ch_versions = ch_versions.mix(CELLBENDER.out.ch_versions.first())
 
 
 
