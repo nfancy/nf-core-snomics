@@ -1,6 +1,7 @@
 process CELLBENDER_REMOVE_BACKGROUND {
     tag "$meta.id"
     label (params.gpu ? 'with_gpus': 'process_high')
+    errorStrategy 'ignore'
 
     container "us.gcr.io/broad-dsde-methods/cellbender:0.3.0"
 
