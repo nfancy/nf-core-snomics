@@ -40,7 +40,7 @@ include { INPUT_CHECK } from '../subworkflows/local/input_check'
 include { GTF_GENE_FILTER   } from '../modules/local/gtf_gene_filter'
 include { CELLRANGER_ALIGN  } from "../subworkflows/local/align_cellranger"
 include { CELLRANGER_ARC_ALIGN  } from "../subworkflows/local/align_cellranger_arc"
-include { CELLBENDER } from "../subworkflows/local/cellbender.nf"
+include { CELLBENDER } from "../subworkflows/local/cellbender"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,19 +95,25 @@ workflow SNOMICS {
     FASTQC (
         ch_fastq
     )
+
     ch_versions = ch_versions.mix(FASTQC.out.versions.first())
 
     if(!ch_cellranger_index) {
 
-    ch_filter_gtf = GTF_GENE_FILTER ( ch_genome_fasta, ch_gtf ).gtf
+    ch_filter_gtf = GTF_GENE_FILTER ( 
+        ch_genome_fasta, 
+        ch_gtf 
+    ).gtf
 
     } else {
         
         ch_filter_gtf = ch_gtf
     }
     
+   
     // Run cellranger pipeline
     if (params.aligner == "cellranger") {
+
         CELLRANGER_ALIGN(
             ch_genome_fasta,
             ch_filter_gtf,
@@ -116,11 +122,10 @@ workflow SNOMICS {
         )
         ch_versions = ch_versions.mix(CELLRANGER_ALIGN.out.ch_versions)
         ch_cellranger_h5 = CELLRANGER_ALIGN.out.outs
-        ch_cellranger_h5
             .map { meta, outs -> 
                 [ meta: meta, h5: outs.findAll { it.endsWith("raw_feature_bc_matrix.h5") }[0]]
             }
-            .set { ch_cellranger_h5 }
+
     }
 
     // Run cellranger-arc pipeline
@@ -133,19 +138,15 @@ workflow SNOMICS {
         )
         ch_versions = ch_versions.mix(CELLRANGER_ARC_ALIGN.out.ch_versions)
         ch_cellranger_h5 = CELLRANGER_ARC_ALIGN.out.outs
-        ch_cellranger_h5
             .map { meta, outs -> 
                 [ meta: meta, h5: outs.findAll { it.endsWith("raw_feature_bc_matrix.h5") }[0]]
             }
-            .set { ch_cellranger_h5 }
 
         // Run MACS2 on cellranger-arc atac output
         ch_bam = CELLRANGER_ARC_ALIGN.out.outs    
-        ch_bam
             .map { meta, outs -> 
                 [ meta: meta, bam: outs.findAll { it.endsWith("atac_possorted_bam.bam") }[0], control: [] ]
             }
-            .set { ch_bam }
 
         MACS2_CALLPEAK (
             ch_bam,
@@ -157,19 +158,18 @@ workflow SNOMICS {
     //
     // MODULE: Run cellbender
     //
+
     CELLBENDER(
         ch_cellranger_h5,
         ch_ensembl_mapping
-    )
+            )
     ch_versions = ch_versions.mix(CELLBENDER.out.ch_versions.first())
 
-
+    
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
             ch_versions.unique().collectFile(name: 'collated_versions.yml')
         )
-
-
 
 }
 

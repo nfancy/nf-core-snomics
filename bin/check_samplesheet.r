@@ -39,6 +39,7 @@ if (!file.exists(args$input)) {
 
 input <- read.csv(args$input)
 
+
 if( args$aligner == "cellranger" ){
   expected_cols <- c("sample", "fastq_1", "fastq_2")
 } else if (args$aligner == "cellranger_arc") {
