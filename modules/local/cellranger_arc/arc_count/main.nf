@@ -1,7 +1,7 @@
 process CELLRANGER_ARC_COUNT {
     tag       "$meta.id"
     label     'process_high_memory'
-    container "austins2/cellranger-arc:v2.0.0" 
+    container "cumulusprod/cellranger-arc:2.0.2" 
 
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
