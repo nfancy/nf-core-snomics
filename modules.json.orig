@@ -7,48 +7,67 @@
                 "nf-core": {
                     "cat/fastq": {
                         "branch": "master",
-                        "git_sha": "e9bc33485e420b51cfbed3cf63ac7463cd5739d3",
+                        "git_sha": "8fc1d24c710ebe1d5de0f2447ec9439fd3d9d66a",
                         "installed_by": ["modules"]
                     },
                     "cellranger/count": {
                         "branch": "master",
-                        "git_sha": "e1a3ae6bf5afce6b23f580e3225e7bdbe1388cd0",
+<<<<<<< HEAD
+                        "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
                         "installed_by": ["modules"]
+=======
+                        "git_sha": "516189e968feb4ebdd9921806988b4c12b4ac2dc",
+                        "installed_by": ["modules"],
+                        "patch": "modules/nf-core/cellranger/count/cellranger-count.diff"
+>>>>>>> dev
                     },
                     "cellranger/mkgtf": {
                         "branch": "master",
-                        "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
+                        "git_sha": "516189e968feb4ebdd9921806988b4c12b4ac2dc",
                         "installed_by": ["modules"]
                     },
                     "cellranger/mkref": {
                         "branch": "master",
-                        "git_sha": "a0443e2c54da4236fe55cd3e39eec8924ebfd646",
+<<<<<<< HEAD
+                        "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
+=======
+                        "git_sha": "516189e968feb4ebdd9921806988b4c12b4ac2dc",
+>>>>>>> dev
                         "installed_by": ["modules"]
                     },
                     "custom/dumpsoftwareversions": {
                         "branch": "master",
+<<<<<<< HEAD
                         "git_sha": "bba7e362e4afead70653f84d8700588ea28d0f9e",
+=======
+                        "git_sha": "8fc1d24c710ebe1d5de0f2447ec9439fd3d9d66a",
+>>>>>>> dev
                         "installed_by": ["modules"]
                     },
                     "fastqc": {
                         "branch": "master",
+<<<<<<< HEAD
                         "git_sha": "3f5420aa22e00bd030a2556dfdffc9e164ec0ec5",
+=======
+                        "git_sha": "8fc1d24c710ebe1d5de0f2447ec9439fd3d9d66a",
                         "installed_by": ["modules"]
                     },
                     "macs2/callpeak": {
                         "branch": "master",
-                        "git_sha": "f0800157544a82ae222931764483331a81812012",
+                        "git_sha": "8fc1d24c710ebe1d5de0f2447ec9439fd3d9d66a",
+>>>>>>> dev
                         "installed_by": ["modules"]
                     },
                     "multiqc": {
                         "branch": "master",
+<<<<<<< HEAD
                         "git_sha": "bba7e362e4afead70653f84d8700588ea28d0f9e",
+=======
+                        "git_sha": "8fc1d24c710ebe1d5de0f2447ec9439fd3d9d66a",
+>>>>>>> dev
                         "installed_by": ["modules"]
                     }
                 }
-            },
-            "subworkflows": {
-                "nf-core": {}
             }
         }
     }

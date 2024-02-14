@@ -1,7 +1,7 @@
 process CELLRANGER_ARC_COUNT {
     tag       "$meta.id"
-    label     'process_high'
-    container "austins2/cellranger-arc:v2.0.0" 
+    label     'process_high_memory'
+    container "cumulusprod/cellranger-arc:2.0.2" 
 
     // Exit if running this module with -profile conda / -profile mamba
     if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
@@ -22,11 +22,12 @@ process CELLRANGER_ARC_COUNT {
     script:
     def args = task.ext.args ?: ''
     def all_reads = (acc_reads + gex_reads).join(' ')
+
     """
     # rename to cellranger file names
     for fastq in ${all_reads}; do
-        renamed=\$(echo \$fastq | sed -r "s@_([0-9]).merged.fastq.gz@_S1_L001_R\\1_001.fastq.gz@")
-        mv \$fastq \$renamed
+         renamed=\$(echo \$fastq | sed "s/.merged/\\_001/" | sed "s/_ChromatinAccessibility//" | sed "s/_GeneExpression//")
+         mv \$fastq \$renamed
     done
 
     ### output cellranger-arc csv

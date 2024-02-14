@@ -1,6 +1,7 @@
-process SAMPLESHEET_CHECK {
-    tag       "${samplesheet}|${aligner}"
-    label     'process_single'
+process CONVERT_H5 {
+    tag "$meta.id"
+    label 'process_medium'
+
     container "nfancy/snomics:4.2.3"
 
     // Exit if running this module with -profile conda / -profile mamba
@@ -9,25 +10,25 @@ process SAMPLESHEET_CHECK {
     }
 
     input:
-    path samplesheet
-    val aligner
+    tuple val(meta), path(cellbender_h5)
+    path ensembl_mapping
 
     output:
-    path "checked_samplesheet.csv", emit: checked_samplesheet
-    path "versions.yml",            emit: versions
+    tuple val(meta), path("cellbender_feature_bc_matrix/*")  ,        emit: cellbender_feature_bc_matrix
+    path "versions.yml"                     ,		 emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script: // This script is bundled with the pipeline, in nf-core/snomics/bin/
     """
-    check_samplesheet.r \\
-        --input $samplesheet \\
-        --aligner $aligner
+    convert_h5_to_sparse_mat.r \\
+        --input_file $cellbender_h5 \\
+        --ensembl_mapping $ensembl_mapping
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-         R: \$( R --version | grep "R version" | cut -d' ' -f3 )
+        R: \$( R --version | grep "R version" | cut -d' ' -f3 )
     END_VERSIONS
     """
 }

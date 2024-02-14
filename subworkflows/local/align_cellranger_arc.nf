@@ -40,7 +40,7 @@ workflow CELLRANGER_ARC_ALIGN {
             .map { [ it[0].id, [ it[0].library_type, it[1].flatten() ] ] } // Create list with library type key
             .groupTuple() // Group ID
             .map { [ it[0], it[1].sort{ a, b ->  a[0] <=> b[0] } ] } // Sort by library type key
-            .map { [ meta: [id: it[0]], gex: it[1][0][1], atac: it[1][1][1] ] } // Expand lists to fastqs
+            .map { [ meta: [id: it[0]], atac: it[1][0][1], gex: it[1][1][1] ] } // Expand lists to fastqs
             .set { ch_fastq }
 
         // Obtain read counts

@@ -18,6 +18,12 @@ def chunk_iter(seq, size):
 
 sample_id = "${meta.id}"
 
+# r1_length = "${meta.r1_length}" if "${meta.r1_length}" is not None else "${params.r1_length}"
+# chemistry = "${meta.chemistry}" if "${meta.chemistry}" is not None else "${params.chemistry}"
+
+r1_length = "${params.r1_length}" if "${meta.r1_length}" == "null" else "${meta.r1_length}"
+chemistry = "${params.chemistry}" if "${meta.chemistry}" == "null" else "${meta.chemistry}"
+
 # get fastqs, ordered by path. Files are staged into
 #   - "fastq_001/{original_name.fastq.gz}"
 #   - "fastq_002/{oritinal_name.fastq.gz}"
@@ -61,7 +67,9 @@ run(
         "cellranger", "count",
         "--id", "${prefix}",
         "--fastqs", str(fastq_all),
+        "--chemistry", chemistry,
         "--transcriptome", "${reference.name}",
+        "--r1-length", r1_length,
         "--localcores", "${task.cpus}",
         "--localmem", "${task.memory.toGiga()}",
         *shlex.split("""${args}""")

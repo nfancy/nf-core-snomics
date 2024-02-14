@@ -2,7 +2,7 @@ process CELLRANGER_MKREF {
     tag "$fasta"
     label 'process_high'
 
-    container "nf-core/cellranger:7.1.0"
+    container "nfcore/cellranger:7.1.0"
 
     input:
     path fasta

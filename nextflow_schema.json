@@ -27,6 +27,17 @@
                     "default": "cellranger",
                     "description": "Name of the aligner tool. Possible values \"cellranger\", \"cellranger_arc\""
                 },
+                "ensembl_mapping": {
+                    "type": "string",
+                    "description": "Path to ensemble gene ID mapping file",
+                    "format": "file-path",
+                    "mimetype": "tsv"
+                },
+                "gpu": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to use GPU for cellbender"
+                },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
@@ -56,7 +67,6 @@
                 },
                 "fasta": {
                     "type": "string",
-                    "format": "file-path",
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "description": "Path to FASTA genome file.",
@@ -75,15 +85,21 @@
                 },
                 "cellranger_index": {
                     "type": "string",
-                    "description": "Path to pre-defined cellranger index file."
+                    "description": "Path to pre-defined cellranger index file.",
+                    "format": "path"
+                },
+                "save_reference": {
+                    "type": "boolean"
+                },
+                "macs2_gsize": {
+                    "type": "string",
+                    "default": "hs",
+                    "description": "Effective genome size. It can be 1.0e+9 or 1000000000, or shortcuts:\u2018hs\u2019 for human (2.7e9), \u2018mm\u2019 for mouse (1.87e9), \u2018ce\u2019 for C. elegans (9e7) and \u2018dm\u2019 for fruitfly (1.2e8)"
                 },
                 "include_introns": {
                     "type": "boolean",
                     "default": true,
                     "description": "Parameter to include or exclude intronic reads in count."
-                },
-                "save_reference": {
-                    "type": "boolean"
                 },
                 "igenomes_base": {
                     "type": "string",
@@ -168,7 +184,7 @@
                 "max_memory": {
                     "type": "string",
                     "description": "Maximum amount of memory that can be requested for any single job.",
-                    "default": "128.GB",
+                    "default": "256.GB",
                     "fa_icon": "fas fa-memory",
                     "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
                     "hidden": true,
@@ -177,7 +193,7 @@
                 "max_time": {
                     "type": "string",
                     "description": "Maximum amount of time that can be requested for any single job.",
-                    "default": "240.h",
+                    "default": "72.h",
                     "fa_icon": "far fa-clock",
                     "pattern": "^(\\d+\\.?\\s*(s|m|h|day)\\s*)+$",
                     "hidden": true,
@@ -243,7 +259,7 @@
                 "tracedir": {
                     "type": "string",
                     "description": "Directory to keep pipeline Nextflow logs and reports.",
-                    "default": "${params.outdir}/pipeline_info",
+                    "default": "null/pipeline_info",
                     "fa_icon": "fas fa-cogs",
                     "hidden": true
                 },
@@ -284,5 +300,15 @@
         {
             "$ref": "#/definitions/generic_options"
         }
-    ]
+    ],
+    "properties": {
+        "r1_length": {
+            "type": "integer",
+            "default": 28
+        },
+        "chemistry": {
+            "type": "string",
+            "default": "auto"
+        }
+    }
 }
