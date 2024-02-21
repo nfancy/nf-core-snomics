@@ -23,6 +23,8 @@ process CELLBENDER_REMOVE_BACKGROUND {
 
     script:
     def args = task.ext.args ?: ''
+    def gpu = params.gpu ? '--cuda' : ''
+    def skip_peaks = params.skip_peaks ? '--exclude-feature-types Peaks' : ''
 
     """
 
@@ -32,9 +34,13 @@ process CELLBENDER_REMOVE_BACKGROUND {
             --output '${meta.id}' \\
             --expected-cells 7000 \\
             --total-droplets-included 30000 \\
-            --cuda \\
+            $gpu \\
             --fpr 0.01 \\
-            --epochs 150   
+            --epochs 150 \\
+            --projected-ambient-count-threshold $params.projected_ambient_count_threshold \\
+            --posterior-batch-size $params.posterior_batch_size \\
+            $skip_peaks
+
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

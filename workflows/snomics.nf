@@ -150,7 +150,7 @@ workflow SNOMICS {
 
         MACS2_CALLPEAK (
             ch_bam,
-            params.macs2_gsize // need to make availible to user
+            params.macs2_gsize
         )
         ch_versions = ch_versions.mix(MACS2_CALLPEAK.out.versions)
     }

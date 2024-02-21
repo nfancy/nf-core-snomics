@@ -24,7 +24,7 @@
                 },
                 "aligner": {
                     "type": "string",
-                    "default": "cellranger",
+                    "default": "cellranger_arc",
                     "description": "Name of the aligner tool. Possible values \"cellranger\", \"cellranger_arc\""
                 },
                 "ensembl_mapping": {
@@ -309,6 +309,18 @@
         "chemistry": {
             "type": "string",
             "default": "auto"
+        },
+        "projected_ambient_count_threshold": {
+            "type": "integer",
+            "default": 2
+        },
+        "posterior_batch_size": {
+            "type": "integer",
+            "default": 64
+        },
+        "skip_peaks": {
+            "type": "boolean",
+            "default": true
         }
     }
 }
