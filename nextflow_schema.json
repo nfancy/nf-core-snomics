@@ -321,6 +321,10 @@
         "skip_peaks": {
             "type": "boolean",
             "default": true
+        },
+        "save_cat_fastq": {
+            "type": "boolean",
+            "default": true
         }
     }
 }
